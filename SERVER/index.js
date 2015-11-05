@@ -53,7 +53,6 @@ io.on('connection', function(socket){
    
    
    socket.on('addQues', function(msg){
-     
            quiz.findOne({ 'QuizID': msg.qid }, 'Questions', function (err, user) {     
                   quiz.update({ 'QuizID' : msg.qid },{
                     $push: {
@@ -89,13 +88,18 @@ io.on('connection', function(socket){
                         SuccessRate : suc
                 }
                 },function(err, store) {});    
-            });
-            
+            });         
    });
    
    
-   
-   
+   socket.on('allQuiz', function(msg){      
+        quiz.find({}, 'Time Name QuizID CourseID -_id', function (err, quiz) {
+              if (err) return handleError(err);
+              console.log(quiz);
+              io.emit('showQuiz', quiz);
+        });       
+    });
+  
    
    
 });
@@ -144,7 +148,7 @@ io.on('connection', function(socket){
   //   res.json(user);
   // });
 // });
-
+//sfsaf
 
 
 http.listen(3000, function(){

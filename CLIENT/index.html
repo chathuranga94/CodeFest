@@ -12,6 +12,7 @@
     <button id="addQues"> Add Questions Here </button>
     <button id="getQuiz"> Get Quiz </button>
     <button id="setResults"> Set Results </button>
+    <button id="allQuiz"> Quiz List </button>
     
     
     <ul id="messages"></ul>
@@ -50,7 +51,7 @@
       
       $('#addQuiz').click(function(){
            var quiz = {
-              id : 101,
+              id : 35,
               name : 'Graph Theory',
               time : 3000,
               course : 'MA1022',
@@ -66,7 +67,7 @@
       
       $('#addQues').click(function(){
            var que = {
-              qid : 101,
+              qid : 35,
               q : '30 + 40 ',
               o : ['70','1020', '30','40'],
               a : '70'   
@@ -76,15 +77,13 @@
       
       
       $('#getQuiz').click(function(){     
-           socket.emit('getQuiz', {qid : 101}); 
+           socket.emit('getQuiz', {qid : 35}); 
            // socket.on('getQuiz', function(msg){
             // $('#messages').append($('<li>').text(msg[1].A));
            // });
       });
-      
-      
       socket.on('showQuiz', function(msg){
-           $('#messages').append($('<li>').text(msg.Questions[0].A));
+           //$('#messages').append($('<li>').text(msg.Questions[0].A));
            console.log(msg);
       });
       
@@ -100,6 +99,13 @@
       
       
       
+      $('#allQuiz').click(function(){
+           console.log('allQuiz Here');
+           socket.emit('allQuiz', {qid : 35});           
+      });
+
+      
+   
       
       
       
