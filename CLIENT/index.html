@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <body>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m"/>
+	    <button>Send</button>
+    </form>
+    
+    
+    <button id="addQuiz"> Add Quiz Here </button>
+    <button id="addQues"> Add Questions Here </button>
+    <button id="getQuiz"> Get Quiz </button>
+    
+    
+    <ul id="messages"></ul>
+    
+    <!--
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+      <script>
+      var socket = io.connect('http://localhost:3000');
+    </script>
+    -->
+    
+    <script src="socket-io.js"></script>
+    <script src="jquery.js"></script>
+    
+    
+    <!--<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>-->
+    <script>
+      
+      var sample = {
+         id : 35,
+         name : 'Mathz'
+         }
+     
+      var socket = io.connect('http://localhost:3000');
+      $('form').submit(function(){
+      //socket.emit('chat message', $('#m').val());
+      socket.emit('addQuiz', sample);
+      
+      $('#m').val('');
+      return false;});
+      
+      
+      
+      $('#addQuiz').click(function(){
+           var quiz = {
+              id : 35,
+              name : 'Mathz'
+              
+           }
+            socket.emit('addQuiz', quiz);
+      });
+      
+      
+      
+      
+      
+      
+      $('#addQues').click(function(){
+           var que = {
+              qid : 35,
+              q : 'What is 1 + 3 = ',
+              o : ['4','12','7','5'],
+              a : '4'   
+           }
+            socket.emit('addQues', que);
+      });
+      
+      
+      $('#getQuiz').click(function(){     
+           socket.emit('getQuiz', {qid : 35}); 
+           socket.on('getQuiz', function(msg){
+            $('#messages').append($('<li>').text(msg[1].A));
+           });
+      });
+      
+      
+      socket.on('showQuiz', function(msg){
+           $('#messages').append($('<li>').text(msg.Questions[0].A));
+      });
+      
+      
+      
+      
+      
+      
+      
+      
+    </script>
+    
+   </body>
+</html>
