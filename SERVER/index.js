@@ -5,7 +5,8 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: true }));
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/quiz');
+//mongoose.connect('mongodb://localhost:27017/quiz');
+mongoose.connect('mongodb://104.131.189.142:27018/quiz');
 mongoose.set('debug', true);
 
 
@@ -34,6 +35,11 @@ io.on('connection', function(socket){
           var add = new quiz({
           QuizID : parseInt(msg.id),
           Name : msg.name,
+          Time : msg.time,
+          CourseID : msg.course,
+          Completed : 0,
+          SuccessRate : 0,
+          Keywords : msg.key
           });
 
           add.save(function (err) {
@@ -58,20 +64,33 @@ io.on('connection', function(socket){
                     }
                 },function(err, store) {});    
             }); 
-   });
-   
-   
-   
-   
+   }); 
    
    socket.on('getQuiz', function(msg){
         console.log(msg);
         
-        quiz.findOne({ 'QuizID': msg.qid }, 'Questions', function (err, quiz) {
+        quiz.findOne({ 'QuizID': msg.qid }, 'Time Name QuizID CourseID Questions -_id', function (err, quiz) {
               if (err) return handleError(err);
               console.log(quiz);
               io.emit('showQuiz', quiz);
         });       
+   });
+   
+   
+   socket.on('sendResults', function(msg){
+        
+        quiz.findOne({ 'QuizID': msg.qid }, 'Completed SuccessRate', function (err, user) {        
+                 var com = user.Completed + 1;
+                 var suc = (user.Completed*user.SuccessRate + 100*msg.result/msg.count )/(user.Completed + 1);
+
+                 quiz.update({ 'QuizID' : msg.qid },{
+                    $set : {
+                        Completed : com,
+                        SuccessRate : suc
+                }
+                },function(err, store) {});    
+            });
+            
    });
    
    
