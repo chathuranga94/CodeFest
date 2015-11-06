@@ -24,6 +24,16 @@ var schema = mongoose.Schema({
 
 var quiz = mongoose.model('quiz',schema);
 
+
+var schema2 = mongoose.Schema({
+      ID : Number,
+      Name : String,
+      Quizzes : Array
+})
+
+var student = mongoose.model('student',schema2);
+
+
 ////////////////////////////////////////////////////////////////////////////////////
 
 io.on('connection', function(socket){
@@ -48,10 +58,7 @@ io.on('connection', function(socket){
           });    
    });
    
-   
-   
-   
-   
+
    socket.on('addQues', function(msg){
            quiz.findOne({ 'QuizID': msg.qid }, 'Questions', function (err, user) {     
                   quiz.update({ 'QuizID' : msg.qid },{
@@ -82,13 +89,20 @@ io.on('connection', function(socket){
                  var com = user.Completed + 1;
                  var suc = (user.Completed*user.SuccessRate + 100*msg.result/msg.count )/(user.Completed + 1);
 
+                 var x = {
+                   yourRate : 100*msg.result/msg.count ,
+                   avgRate : suc
+                 }    
+                io.emit('showQuiz',x);
+
                  quiz.update({ 'QuizID' : msg.qid },{
                     $set : {
                         Completed : com,
                         SuccessRate : suc
                 }
                 },function(err, store) {});    
-            });         
+            });    
+                
    });
    
    
@@ -99,56 +113,43 @@ io.on('connection', function(socket){
               io.emit('showQuiz', quiz);
         });       
     });
+    
+    
+    
+   socket.on('deleteQuiz', function(msg){      
+         quiz.findOne({ 'QuizID': msg.qid }).remove().exec();
+    });    
+    
+    socket.on('addStudent', function(msg){
+          console.log(msg);
+        
+          var add = new quiz({
+          ID : parseInt(msg.id),
+          Name : msg.name
+          });
+
+          add.save(function (err) {
+            if (err) // ...
+            console.log('done')
+          });    
+     });
+     
+    socket.on('allStudent', function(msg){      
+        student.find({}, 'ID Name -_id', function (err, student) {
+              if (err) return handleError(err);
+              io.emit('getStudent', student);
+        });       
+    });
+    
+    
+    
+    
   
    
    
 });
  
-// ////////////////////////////////////////////////////////////////////////////////////
 
-// app.post('/transaction', function (req, res) {
-//      var bal ;
-    
-//     user.findOne({ 'NIC': req.body.id }, 'DueDate Balance', function (err, user) {
-//       if(!user){ res.json({ end : 0 }); }
-//       else{
-//       bal = user.Balance;
-//       bal = bal - req.body.amount;
-//       update();
-//       res.json({ end : 1 });}
-//     });  
-  
-//   function update(){
-//     user.update({ 'NIC' : req.body.id },{
-//       $set : {
-//           DueDate : new Date(req.body.due),
-//           Balance : bal ,
-//       },
-//       $push: {
-//           'Trans': {
-//                 amount: req.body.amount,
-//                 date: new Date( req.body.date ),
-//                 officer : req.body.code  
-//                    }
-//              }
-//     },function(err, store) {});
-       
-//   }     
-      
-// });
-
-// ////////////////////////////////////////////////////////////////////////////////////
-
-// app.get('/find/:id', function(req, res){
-   
-  // user.findOne({ 'NIC': req.params.id }, 'NIC FirstName LastName Area  Group DueDate Balance Trans Address Telephone ProductID', function (err, user) {
-
-  //   if (err) return handleError(err);
-  
-  //   res.json(user);
-  // });
-// });
-//sfsaf
 
 
 http.listen(3000, function(){

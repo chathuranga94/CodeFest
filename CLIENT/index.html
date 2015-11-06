@@ -13,6 +13,8 @@
     <button id="getQuiz"> Get Quiz </button>
     <button id="setResults"> Set Results </button>
     <button id="allQuiz"> Quiz List </button>
+    <button id="deleteQuiz"> Delete Quiz </button>
+    
     
     
     <ul id="messages"></ul>
@@ -38,7 +40,7 @@
          }
      
       //var socket = io.connect('http://104.131.189.142:3000');
-      var socket = io.connect('http://localhost:3000');
+      var socket = io.connect('http://104.131.189.142:3000');
       
       $('form').submit(function(){
       //socket.emit('chat message', $('#m').val());
@@ -51,11 +53,11 @@
       
       $('#addQuiz').click(function(){
            var quiz = {
-              id : 35,
-              name : 'Graph Theory',
-              time : 3000,
-              course : 'MA1022',
-              key : ['Mathematics','Level2']
+              id : 21,
+              name : 'Discrete Mathematics',
+              time : 5000,
+              course : 'MA1034',
+              key : ['Maths','Level1']
            }
             socket.emit('addQuiz', quiz);
       });
@@ -67,17 +69,24 @@
       
       $('#addQues').click(function(){
            var que = {
-              qid : 35,
-              q : '30 + 40 ',
-              o : ['70','1020', '30','40'],
-              a : '70'   
+              qid : 94,
+              q : 'What is more Efficient ?',
+              o : ['Binary Search','Linear Search'],
+              a : 'Binary Search'  
            }
             socket.emit('addQues', que);
       });
       
       
+      $('#deleteQuiz').click(function(){
+            socket.emit('deleteQuiz', {qid : 21});
+      });
+      
+      
+     
+      
       $('#getQuiz').click(function(){     
-           socket.emit('getQuiz', {qid : 35}); 
+           socket.emit('getQuiz', {qid : 201}); 
            // socket.on('getQuiz', function(msg){
             // $('#messages').append($('<li>').text(msg[1].A));
            // });
@@ -90,7 +99,7 @@
       
       $('#setResults').click(function(){
            var que = {
-              qid : 100,
+              qid : 21,
               result : 3,
               count : 10  
            }
